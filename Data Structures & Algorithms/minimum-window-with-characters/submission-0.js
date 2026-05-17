@@ -5,6 +5,7 @@ class Solution {
      * @return {string}
      */
     minWindow(s, t) {
+        if(t === "") return ""
         if(s.length < t.length) return ""
 
         const window = new Map()
