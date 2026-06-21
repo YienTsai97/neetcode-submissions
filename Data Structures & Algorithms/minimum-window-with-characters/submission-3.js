@@ -5,42 +5,38 @@ class Solution {
      * @return {string}
      */
     minWindow(s, t) {
-        if(t.length>s.length) return ""
-        const need = new Map()
-        const window = new Map()
+        if(t === "" ) return ""
+        let mapT = new Map()
+        let window = new Map()
+        let res = [ -1 , -1]
+        let l = 0
 
-        for(let char of t){
-            need.set(char, (need.get(char) || 0) + 1)
+        for (let i = 0; i < t.length ; i++){
+            mapT.set(t[i], (mapT.get(t[i]) || 0) + 1)
         }
-        let have = 0
-        let needCount = need.size
 
-        let left = 0
-        let res = ""
+        let need = mapT.size
+        let have = 0
         let resLen = Infinity
 
-        for(let right = 0 ; right < s.length ; right++){
-            const char = s[right]
-
-            window.set(char, (window.get(char)|| 0 ) + 1)
-            if(need.has(char) && window.get(char) === need.get(char)){
+        for(let r = 0 ; r < s.length ; r++){
+            window.set(s[r], (window.get(s[r])|| 0) + 1)
+            if(mapT.has(s[r]) && window.get(s[r]) === mapT.get(s[r])){
                 have ++
             }
-
-            while(have === needCount){
-                const currentLen = right - left + 1
-                if(resLen > currentLen) { 
-                    res = s.slice(left, right + 1)
-                    resLen = currentLen
+            while(have === need){
+                if (r - l + 1 < resLen){
+                    res = [l, r]
+                    resLen = r - l + 1
                 }
-                const leftChar = s[left]
-                window.set(leftChar, window.get(leftChar) - 1)
-                if (need.has(leftChar) && window.get(leftChar) < need.get(leftChar)){
+                window.set(s[l] , window.get(s[l]) - 1)
+                if(mapT.has(s[l]) && window.get(s[l]) < mapT.get(s[l]) ){
                     have--
                 }
-                left ++
+                l++
             }
         }
-        return res
+        if(resLen === Infinity) return  "" 
+        return s.slice(res[0],res[1]+1)
     }
 }
