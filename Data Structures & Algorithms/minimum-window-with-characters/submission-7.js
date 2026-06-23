@@ -5,49 +5,39 @@ class Solution {
      * @return {string}
      */
     minWindow(s, t) {
-        if(s.length < t.length) return ""
+        if(t === "") return ""
 
-        const window = new Map()
-        const mapT = new Map()
-        for(let char of t){
-            mapT.set(char, (mapT.get(char) || 0) + 1)
+        let mapT = new Map()
+        for(let i = 0 ; i < t.length ; i++){
+            mapT.set(t[i], (mapT.get(t[i])|| 0 ) + 1)
         }
 
-        let left = 0
+        let need = mapT.size
         let have = 0
-        const need = mapT.size
-        let res = ""
-        let resLen = Infinity
-
-        for(let right = 0 ; right < s.length ; right++){
-            //add new char in window
-            const charR = s[right]
-            window.set(charR, (window.get(charR) || 0) + 1)
-
-            //check if this char count in window match T
-            if(mapT.has(charR) && window.get(charR) === mapT.get(charR)) {
-                have ++
-            }
-
-            // if all char amount in window match T (if true shrink the array from left)
+        let l = 0
+        let minLen = Infinity
+        let mapS = new Map()
+        let res = [0, 0]
+        for (let r = 0 ; r < s.length ; r++) {
+            mapS.set(s[r], (mapS.get(s[r]) || 0) + 1)
+            if( mapT.has(s[r]) && mapS.get(s[r]) === mapT.get(s[r])) {
+                have++
+            }         
             while(have === need){
-                //Update result
-                const thisLen = right - left + 1
-                if (thisLen < resLen) {
-                    resLen = thisLen
-                    res = s.slice(left, right + 1)
+                let thisLen = r - l + 1
+                if(thisLen < minLen) {
+                    res = [l, r]
+                    minLen = thisLen
                 }
-                //pop from left of window (to shrink the window finding min legal length)
-                const charL = s[left]
-                window.set(charL, window.get(charL) - 1)
-                //check if amount of charL equal to mapT or not (have could change)
-                if( mapT.has(charL) && window.get(charL) < mapT.get(charL)){
+                
+                
+                mapS.set(s[l], mapS.get(s[l]) - 1)
+                if(mapT.has(s[l]) && mapT.get(s[l]) > mapS.get(s[l])){
                     have--
                 }
-                left ++
+                l++
             }
         }
-        // if (resLen === Infinity)  return "" 
-        return res
+        return minLen === Infinity ? "" : s.slice(res[0], res[1] + 1)
     }
 }
